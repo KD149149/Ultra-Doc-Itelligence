@@ -1,0 +1,200 @@
+
+---
+
+# Ultra Doc-Intelligence POC
+
+**Design & Developer:** Kajal Dadas
+**Email:** [kajaldadas149@gmail.com](mailto:kajaldadas149@gmail.com)
+**Phone:** 7972244559
+
+---
+
+## **Project Overview**
+
+Ultra Doc-Intelligence is a **Proof-of-Concept AI system** for logistics documents. Users can:
+
+* Upload logistics documents (PDF, DOCX, TXT)
+* Ask natural language questions
+* Retrieve grounded answers with confidence scores
+* Extract structured shipment data as JSON
+
+The system uses **embeddings, semantic search, and keyword-based extraction** to ensure answers come directly from the document content.
+
+---
+
+## **Features**
+
+* Document upload (PDF, DOCX, TXT)
+* Natural language question answering
+* Confidence scoring with guardrails
+* Display source text for retrieved answers
+* Structured shipment data extraction (JSON)
+
+---
+
+## **Architecture**
+
+```
+[Frontend: Streamlit UI]
+          │
+          ▼
+[Backend Logic: Python Functions]
+    ├─ Document Parsing (PDF, DOCX, TXT)
+    ├─ Chunking & Embeddings (Sentence-Transformers)
+    ├─ Vector Storage (In-memory)
+    ├─ Retrieval (Semantic Search)
+    ├─ Question Answering (Keyword + Chunk Matching)
+    └─ Structured Extraction (Regex)
+```
+
+**Flow:**
+
+1. User uploads a logistics document.
+2. Document is parsed and split into chunks.
+3. Chunks are converted into embeddings and stored in memory.
+4. User asks a question.
+5. System retrieves relevant chunks and extracts the answer.
+6. Confidence score and source chunk are returned.
+7. Structured shipment data can be extracted as JSON.
+
+---
+
+## **Chunking Strategy**
+
+* **Chunk size:** 500 words
+* **Overlap:** 50 words
+* **Purpose:** Preserves semantic context across chunks for accurate retrieval
+
+---
+
+## **Retrieval Method**
+
+* **Embeddings:** `Sentence-Transformers (all-MiniLM-L6-v2)`
+* **Similarity:** Cosine similarity between question and chunks
+* **Top K chunks retrieved:** Default 5
+
+---
+
+## **Guardrails**
+
+* **Minimum similarity threshold:** 0.3
+* **Keyword matching:** Only answers containing keywords from the question are returned
+* **Fallback:** Returns first sentence containing keyword if regex fails
+
+---
+
+## **Confidence Scoring**
+
+* Confidence = **maximum similarity score** among retrieved chunks
+* Range: 0.0 → 1.0
+* Low confidence indicates missing keyword or insufficient content
+
+---
+
+## **Structured Extraction**
+
+Fields extracted:
+
+* Shipment ID
+* Shipper
+* Consignee
+* Pickup datetime
+* Delivery datetime
+* Equipment type
+* Mode
+* Rate & Currency
+* Weight
+* Carrier name
+
+**Note:** Missing fields return `null`.
+
+---
+
+## **Failure Cases**
+
+* Keyword not present → `"Not found in document"`
+* Poorly scanned PDFs → text extraction may fail
+* Large documents → in-memory embeddings may slow down
+* Questions phrased very differently from keywords → may fail
+
+---
+
+## **Improvement Ideas**
+
+* Integrate GPT-3.5/4 for fully natural sentence answers
+* Add OCR for scanned documents (`pytesseract`)
+* Use persistent vector stores (FAISS, Pinecone, Weaviate)
+* Multi-document search capability
+* Enhanced UI/UX: highlighted sources, progress bars
+* Multi-chunk agreement for improved confidence
+
+---
+
+## **Setup & Run**
+
+### **1. Clone Repository**
+
+```bash
+git clone <your-repo-url>
+cd Ultra-Doc-Intelligence
+```
+
+### **2. Create Virtual Environment (Optional)**
+
+```bash
+# Linux / Mac
+python3 -m venv venv
+source venv/bin/activate
+
+# Windows
+python -m venv venv
+venv\Scripts\activate
+```
+
+### **3. Install Dependencies**
+
+```bash
+pip install -r requirements.txt
+```
+
+### **4. Run the App**
+
+```bash
+streamlit run ultra_doc_intelligence_final.py
+```
+
+### **5. Open Browser**
+
+Visit `http://localhost:8501` to use the app.
+
+---
+
+## **Requirements**
+
+`requirements.txt` example:
+
+```
+streamlit==1.28.0
+PyPDF2==3.1.0
+python-docx==0.8.12
+sentence-transformers==2.2.2
+torch==2.1.0
+numpy==1.26.0
+```
+
+Optional OCR support:
+
+```
+pytesseract==0.3.11
+Pillow==10.1.0
+```
+
+---
+
+## **Contact**
+
+**Design & Developer:** Kajal Dadas
+**Email:** [kajaldadas149@gmail.com](mailto:kajaldadas149@gmail.com)
+**Phone:** 7972244559
+
+---
